@@ -3,7 +3,13 @@ package main
 import (
 	"fmt"
 	"errors"
+	"encoding/json"
 )
+
+type Student struct {
+	Name string `json:"name"`
+	Score int `json:score`
+}
 
 
 func main() {
@@ -175,6 +181,38 @@ func main() {
 		fmt.Printf("%s 平均分數：%.2f\n", name, score)
 	}
 
+	fmt.Println("-----\n")
+	// Step 6. slice <--> map <--> JSON
+
+	// 6-1. slice → JSON
+	students := []Student{
+		{Name: "Alice", Score: 90},
+		{Name: "Bob", Score: 85},
+		{Name: "Charlie", Score: 95},
+	}
+
+	jsonBytes, err := json.MarshalIndent(students, "", " ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Slice -> JSON:")
+	fmt.Println(string(jsonBytes))
+
+	// 6-2. JSON -> slice
+	var decoded []Student
+	if err := json.Unmarshal(jsonBytes, &decoded); err!= nil {
+		panic(err)
+	}
+	fmt.Println("\nJSON -> Slice:")
+	fmt.Println(decoded)
+
+	// 6-3. slice -> map (以Name當key)
+	scoreMap := make(map[string]int)
+	for _, s := range students {
+		scoreMap[s.Name] = s.Score
+	}
+	fmt.Println("\nSlice -> Map")
+	fmt.Println(scoreMap)
 }
 
 func averageScore(classScore map[string][]int, name string )(avg float64, err error) {
